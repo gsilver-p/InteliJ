@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script th:src="@{/js/common.js}"></script>
+    <script th:inline="javascript">
+        const m = [[${msg}]]
+        window.onload=()=>{
+            msgPrint();
+        }
+    </script>
+</head>
+<body>
+<div class="wrap">
+    <th:block th:replace="~{fragments::header}"></th:block>
+    <session>
+        <form action="/member/join" method="post" class="login-form" name="joinform" onsubmit="return check()">
+            <input name="m_id" type="text" class="login-input" id="m_id"
+                   title="아이디" autofocus placeholder="아이디">
+            <span id="checkMsg">  </span>
+            <input type="button" id="checkId" class="idcheck-btn" value="중복확인">
+            <input name="m_pw" type="password" class="login-input"
+                   title="비밀번호" placeholder="비밀번호">
+            <input name="m_name" type="text"
+                   class="login-input" title="이름" placeholder="이름">
+            <input name="m_birth" type="text" class="login-input" title="생일"
+                   placeholder="생일">
+            <input name="m_addr" type="text" class="login-input"
+                   title="주소" placeholder="주소">
+            <input type="submit" class="login-btn" value="가입">
+        </form>
+    </session>
+    <th:block th:replace="~{fragments::footer}"></th:block>
+</div>
+<script>
+    // jquery validation활용해서 유효성도 체크해보자!
+    function check() {
+        const joinform = document.joinform;
+        console.log("joinform~!")
+        const len = joinform.length - 1;
+        for (let i = 0; i < len; i++) {
+            if (joinform[i].value === '' || joinform[i].value === null) {
+                alert(joinform[i].title + " 입력해줘야지! 왜 안해!!!!")
+                joinform[i].focus();
+                return false;
+            }
+        }
+        return true;  // 일반 버튼 일 경우 joinform.submit();
+    }
+</script>
+</body>
+</html>

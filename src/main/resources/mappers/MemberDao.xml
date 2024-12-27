@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+1. parameterType은 생략 가능
+2. resultType="boolean" 생략 가능
+3. #{변수명}, #{필드명}, #{속성명}
+-->
+
+<mapper namespace="com.example.board.dao.MemberDao">
+    <!-- sql 문 -->
+    <select id="login" parameterType="MemberDto" resultType="boolean">
+        select count(*) from member where m_id=#{m_id} and m_pw=#{m_pw}
+    </select>
+
+
+    <insert id="join" parameterType="MemberDto">
+        insert into member(m_id,m_pw,m_name,m_birth,m_addr,m_point)
+        values (#{m_id},#{m_pw},#{m_name},#{m_birth},#{m_addr},default)
+    </insert>
+
+    <select id="isUsedId" resultType="java.lang.Boolean"> <!-- 파라미터 값은 생략 가능 -->
+        select count(*) from member where m_id=#{id}
+    </select>
+</mapper>
