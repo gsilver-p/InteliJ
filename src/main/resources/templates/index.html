@@ -16,7 +16,9 @@
     <link rel="stylesheet" href="/css/style.css">
     <script defer src="/js/common.js"></script>
     <script th:inline="javascript">
-        const m=[[${msg}]]
+        const m=[[${msg}]]  //model객체(request영역) 저장된 속성 객체
+        //const m = [[${param.msg}]]
+        console.log("msg",m)
         // if(m!=null) {
         //     alert(m);
         // }

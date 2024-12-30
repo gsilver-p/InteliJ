@@ -29,7 +29,9 @@
     </select>
 
     <select id="getMemberInfo" resultType="com.example.board.dto.MemberDto">
-        select m_id, m_name, m_point from member where m_id = #{mId}
+        select m_id, m_name, m_point, g_name from member m
+        join grade g on m.m_point between g.g_lowpoint and g.g_highpoint
+        where m.m_id = #{mId}
     </select>
 
 </mapper>

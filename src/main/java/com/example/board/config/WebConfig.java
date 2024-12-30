@@ -14,9 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor)
-        // Controller에서
-        .addPathPatterns("/**")  // 전 단계 다 가로채기~!!!
-                .excludePathPatterns("/", "/member/login", "/member/logout", "/member/join", "/js/**", "/css/**", "/img/**");
-
+                // 모든 경로 인터셉트!!!
+                .addPathPatterns("/**")
+                .excludePathPatterns("/", "/member/login", "/member/logout", "/member/join") // 인터셉트에서 제외 할 url
+                .excludePathPatterns("/js/**", "/css/**", "/img/**", "/favicon.ico");
     }
 }

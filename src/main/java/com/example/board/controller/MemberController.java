@@ -21,12 +21,15 @@ public class MemberController {
     private final MemberService memberservice;  // <--- DAO 객체
 
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm(HttpSession session) {
+        if(session.getAttribute("member") != null) {
+            return "redirect:/";
+        }
         return "member/login";
     }
 
     @PostMapping("/login")
-    public String login(MemberDto memberDto, HttpSession session) {
+    public String login(MemberDto memberDto, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         log.info("id:{},pw:{}", memberDto.getM_id(), memberDto.getM_pw());
         // DB에서 select!
         // MemberDto memberDto = new MemberDto();
@@ -45,16 +48,22 @@ public class MemberController {
         log.info("member: {}",member);
         if(member != null) {
             session.setAttribute("member", member);  // id, name, point 담아왔지
+            Object url = session.getAttribute("preUrl_login");
+            if(url != null) {
+                session.removeAttribute("preUrl_login");
+                return "redirect: "+url.toString();
+            }
             return "redirect:/";
         }
-        return "index";
+        redirectAttributes.addFlashAttribute("msg","로그인 실패야ㅠ_ㅠ");
+        return "redirect:/";
     }
     @GetMapping("/join")  // 프론트에서 get으로 넘기면 포워딩하거나 select 하는거!
     public String joinForm(HttpSession session) {
-        // 로그인 인가여부는 너무 많이 확인해야해서 불편해  --> interceptor or spring security 활용
-        //        if(session.getAttribute("member") != null) {
-        //            return "/index";
-        //        }
+         // 로그인 인가여부는 너무 많이 확인해야해서 불편해  --> interceptor or spring security 활용
+                if(session.getAttribute("member") != null) {
+                    return "redirect:/";
+                }
         return "member/join";
     }
 
