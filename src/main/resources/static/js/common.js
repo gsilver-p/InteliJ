@@ -9,8 +9,8 @@ function msgPrint() {
 }
 
 function loginStatus() {
-    if(id) {
-        $('#m_id').html(id+"님")
+    if(mb) {
+        $('#m_name').html(`${mb.m_name}님`)
         $('.suc').css('display','block');   // .show();
         $('.bef').css('display','none');    // .hide();
     } else {

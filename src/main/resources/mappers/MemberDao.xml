@@ -23,4 +23,13 @@
     <select id="isUsedId" resultType="java.lang.Boolean"> <!-- 파라미터 값은 생략 가능 -->
         select count(*) from member where m_id=#{id}
     </select>
+
+    <select id="getSecurityPw" resultType="java.lang.String">
+        select m_pw from member where m_id = #{mId}
+    </select>
+
+    <select id="getMemberInfo" resultType="com.example.board.dto.MemberDto">
+        select m_id, m_name, m_point from member where m_id = #{mId}
+    </select>
+
 </mapper>

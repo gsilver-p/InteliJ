@@ -15,4 +15,8 @@ public interface MemberDao {
     boolean join(MemberDto memberDto);
 
     boolean isUsedId(String mId);
+
+    MemberDto getMemberInfo(String mId);
+
+    String getSecurityPw(String mId);
 }

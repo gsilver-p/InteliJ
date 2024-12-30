@@ -9,12 +9,23 @@
             alert(m);
         }
     </script>
+    <script th:src="@{/js/common.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<form action="login" method="post">
-    아이디: <input type="text" name="m_id"><br>
-    비밀번호: <input type="text" name="m_pw"><br>
-    <button>로그인</button>
-</form>
+<th:block th:replace="~{fragments::header}"></th:block>
+
+<section>
+    <div class="content">
+        <form th:action="@{/member/login}" method="post" class="login-form">
+            <h2 class="login-header">로그인</h2>
+            <input type="text" class="login-input" name="m_id" autofocus required placeholder="아이디"><br>
+            <input type="text" class="login-input" name="m_pw" required placeholder="비밀번호"><br>
+            <button class="login-btn">로그인</button>
+        </form>
+    </div>
+</section>
+
+<th:block th:replace="~{fragments::footer}"></th:block>
 </body>
 </html>

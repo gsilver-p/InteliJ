@@ -31,17 +31,30 @@ public class MemberController {
         // DB에서 select!
         // MemberDto memberDto = new MemberDto();
         // memberDto.setM_id(m_id).setM_pw(m_pw);
-        boolean result = memberservice.login(memberDto);
-        if (result) {
-            session.setAttribute("id", memberDto.getM_id());
+        // boolean result = memberservice.login(memberDto);
+        // if (result) {
+            // session.setAttribute("id", memberDto.getM_id());
             // session.setAttribute("member", memberDto);
-            return "redirect:/";
+            // return "redirect:/";
+        //
+        // }
+        // return "index";
 
+        // 비밀번호 암호 화 이후!
+        MemberDto member = memberservice.login(memberDto);
+        log.info("member: {}",member);
+        if(member != null) {
+            session.setAttribute("member", member);  // id, name, point 담아왔지
+            return "redirect:/";
         }
         return "index";
     }
     @GetMapping("/join")  // 프론트에서 get으로 넘기면 포워딩하거나 select 하는거!
-    public String joinForm() {
+    public String joinForm(HttpSession session) {
+        // 로그인 인가여부는 너무 많이 확인해야해서 불편해  --> interceptor or spring security 활용
+        //        if(session.getAttribute("member") != null) {
+        //            return "/index";
+        //        }
         return "member/join";
     }
 
@@ -59,7 +72,7 @@ public class MemberController {
         return "redirect:/member/join";
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String logout(HttpSession session, RedirectAttributes rttr) {
         session.invalidate();
         rttr.addFlashAttribute("msg","친구야 잘가");
