@@ -53,7 +53,7 @@ public class MemberController {
                 session.removeAttribute("preUrl_login");
                 return "redirect: "+url.toString();
             }
-            return "redirect:/";
+            return "redirect:/board";
         }
         redirectAttributes.addFlashAttribute("msg","로그인 실패야ㅠ_ㅠ");
         return "redirect:/";

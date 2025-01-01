@@ -6,4 +6,8 @@
         insert into board
         values (null, #{b_title}, #{b_contents}, #{b_id}, default, default)
     </insert>
+
+    <select id="getBoardList" parameterType="HashMap" resultType="com.example.board.dto.BoardDto">
+        select b_num, b_title, b_writer, b_date, b_view from board order by b_num desc limit #{startIndex}, #{pageSize}
+    </select>
 </mapper>
