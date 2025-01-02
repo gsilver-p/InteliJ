@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/css/style.css">
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script defer th:src="@{/js/common.js}"></script>
     <script th:inline="javascript">
         const m = [[${msg}]]
@@ -58,7 +59,8 @@
                             <th:block th:each="board:${boardList}">
 
                                 <div class="t-no p-10" th:text="${board.b_num}"></div>
-                                <div class="t-title p-30" th:text="${board.b_title}"></div>
+                                <div class="t-title p-30">
+                                    <a th:href="@{/board/detail}" th:text="${board.b_title}"></a></div>
                                 <div class="t-name p-15" th:text="${board.b_writer}"></div>
                                 <div class="t-date p-30"
                                      th:text="${#temporals.format(board.b_date, 'yyyy/MM/dd HH:mm:ss')}"></div>
@@ -82,14 +84,14 @@
     // 검색 기능 체크
     $('#search').click(function () {
         let keyword = $('#keyword').val();
-        if(keyword === '') {
+        if (keyword === '') {
             alert("검색어를 입력해주세요! 제가 할 일을 할게요 >_^")
             return;
         }
         let select = $('#sel').val();
-        if(select ==='') return;
-        console.log(keyword,select);
-        location.href="/board?colname="+select+'&keyword='+keyword+"&pageNum=1"
+        if (select === '') return;
+        console.log(keyword, select);
+        location.href = "/board?colname=" + select + '&keyword=' + keyword + "&pageNum=1"
         // localhost/board?colname=b_title&keyword=제목&pageNum=1
     })
 </script>

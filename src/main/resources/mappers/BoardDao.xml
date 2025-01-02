@@ -4,16 +4,38 @@
 
     <insert id="insertDummyData">
         insert into board
-        values (null, #{b_title}, #{b_contents}, #{b_id}, default, default)
+        values (null, #{b_title}, #{b_contents}, #{b_writer}, default, default)
     </insert>
 
     <select id="getBoardList" parameterType="HashMap" resultType="com.example.board.dto.BoardDto">
-        select b_num, b_title, b_writer, b_date, b_view from board order by b_num desc limit #{startIndex}, #{pageSize}
+        select b_num, b_title, b_writer, b_date, b_view from board order by b_num desc limit #{startIndex}, #{listCnt}
     </select>
 
     <select id="getBoardListSearch" resultType="com.example.board.dto.BoardDto">
         select b_num, b_title, b_writer, b_date, b_view from board
+        <if test="colname != null and colname != ''">
         where ${colname} like concat('%',#{keyword},'%')
+        </if>
         order by b_num desc limit #{startIndex}, #{listCnt}
+    </select>
+
+    <select id="getBoardListSearchNew" resultType="com.example.board.dto.BoardDto">
+        select b_num, b_title, b_writer, b_date, b_view from board
+        <choose>
+        <when test="keyword!=null and keyword!=''">
+            where ${colname} like concat('%',#{keyword},'%')
+            order by b_num desc limit #{startIndex}, #{listCnt}
+        </when>
+        <otherwise>
+            order by b_num desc limit #{startIndex}, #{listCnt}
+        </otherwise>
+        </choose>
+    </select>
+
+    <select id="getBoardCount" resultType="java.lang.Integer">
+        select count(*) from board
+        <if test="colname!=null and colname!=''">
+            where ${colname} like concat('%',#{keyword},'%')
+        </if>
     </select>
 </mapper>

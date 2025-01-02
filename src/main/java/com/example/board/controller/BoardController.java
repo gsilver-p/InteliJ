@@ -8,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,29 +38,40 @@ public class BoardController {
     @GetMapping
     public String boardlist(SearchDto searchdto, Model model) {
         log.info("before searchdto:{}", searchdto);
-        if(searchdto.getPageNum() == null)
+        if (searchdto.getPageNum() == null)
             searchdto.setPageNum(1);
 
-        if(searchdto.getListCnt() == null)
+        if (searchdto.getListCnt() == null)
             searchdto.setListCnt(BoardService.listcnt);
 
-        if(searchdto.getStartIndex() == null)
+        if (searchdto.getStartIndex() == null)
             searchdto.setStartIndex(0);
 
         List<BoardDto> boardList = null;
-        if(searchdto.getColname() == null || searchdto.getKeyword() == null) {
-            boardList = boardService.getBoardList(searchdto.getPageNum()); // 페이지 번호 클릭
-        } else {
-            boardList = boardService.getBoardList(searchdto);
-        }
+        // 정적쿼리
+        //  if(searchdto.getColname() == null || searchdto.getKeyword() == null) {
+        //      boardList = boardService.getBoardList(searchdto.getPageNum()); // 페이지 번호 클릭
+        //        } else {
+        //            boardList = boardService.getBoardList(searchdto);
+        //        }
 
+            // 동적 쿼리 작성 시
+        // boardList = boardService.getBoardListSearch(searchdto);  // IF 문
+        boardList = boardService.getBoardListSearch(searchdto);  // CHOOSE WHEN 문
         if (boardList != null) {
-            String pageHtml=boardService.getPaging(searchdto.getPageNum());
+            // 페이지 정보
+            String pageHtml = boardService.getPaging(searchdto);
             model.addAttribute("paging", pageHtml);
             model.addAttribute("boardList", boardList);
             return "board/boardlist";
         }
         return "redirect:/";
+    }
+
+    @GetMapping("/detail/{bnum}")
+    public String detail(@PathVariable("bnum") Integer bnum, Model model) {
+        log.info("==== con detail bnum:{}", bnum);
+        return null;
     }
 
     @GetMapping("/write")

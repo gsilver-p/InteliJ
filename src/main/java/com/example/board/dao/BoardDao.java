@@ -17,10 +17,12 @@ public interface BoardDao {
     ArrayList<BoardDto> getBoardList(Map<String, Integer> pageMap);
 
     @Select("select * from board")
-    List<BoardDto> getBoardListAll(Map<String, Integer> pageMap);
+    List<BoardDto> getBoardListAll();
 
-    @Select("select count(*) from board")
-    int getBoardCount();
+     int getBoardCount(SearchDto searchdto);
+    // 동적쿼리 이용해서 키워드가 있거나 없어도 처리
 
     List<BoardDto> getBoardListSearch(SearchDto searchDto);
+
+    List<BoardDto> getBoardListSearchNew(SearchDto searchDto);
 }
