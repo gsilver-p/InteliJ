@@ -1,6 +1,7 @@
 package com.example.board.dao;
 
 import com.example.board.dto.BoardDto;
+import com.example.board.dto.SearchDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -21,4 +22,5 @@ public interface BoardDao {
     @Select("select count(*) from board")
     int getBoardCount();
 
+    List<BoardDto> getBoardListSearch(SearchDto searchDto);
 }

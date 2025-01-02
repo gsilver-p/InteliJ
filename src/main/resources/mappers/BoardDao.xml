@@ -10,4 +10,10 @@
     <select id="getBoardList" parameterType="HashMap" resultType="com.example.board.dto.BoardDto">
         select b_num, b_title, b_writer, b_date, b_view from board order by b_num desc limit #{startIndex}, #{pageSize}
     </select>
+
+    <select id="getBoardListSearch" resultType="com.example.board.dto.BoardDto">
+        select b_num, b_title, b_writer, b_date, b_view from board
+        where ${colname} like concat('%',#{keyword},'%')
+        order by b_num desc limit #{startIndex}, #{listCnt}
+    </select>
 </mapper>

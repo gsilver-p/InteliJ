@@ -51,7 +51,7 @@ public class MemberController {
             Object url = session.getAttribute("preUrl_login");
             if(url != null) {
                 session.removeAttribute("preUrl_login");
-                return "redirect: "+url.toString();
+                return "redirect:/"+url.toString();
             }
             return "redirect:/board";
         }

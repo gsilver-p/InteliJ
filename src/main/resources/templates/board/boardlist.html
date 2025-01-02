@@ -8,12 +8,15 @@
     <script defer th:src="@{/js/common.js}"></script>
     <script th:inline="javascript">
         const m = [[${msg}]]
-        const mb = [[${session.mb}]]
+        const mb = [[${session.member}]]
         $(() => {
             msgPrint()
             loginStatus()
         })
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bxslider/4.2.17/jquery-3.1.1.min.js"
+            integrity="sha512-U6K1YLIFUWcvuw5ucmMtT9HH4t0uz3M366qrF5y4vnyH6dgDzndlcGvH/Lz5k8NFh80SN95aJ5rqGZEdaQZ7ZQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <div class="wrap">
@@ -75,5 +78,20 @@
     </section>
     <th:block th:replace="~{fragments::footer}"></th:block>
 </div>
+<script>
+    // 검색 기능 체크
+    $('#search').click(function () {
+        let keyword = $('#keyword').val();
+        if(keyword === '') {
+            alert("검색어를 입력해주세요! 제가 할 일을 할게요 >_^")
+            return;
+        }
+        let select = $('#sel').val();
+        if(select ==='') return;
+        console.log(keyword,select);
+        location.href="/board?colname="+select+'&keyword='+keyword+"&pageNum=1"
+        // localhost/board?colname=b_title&keyword=제목&pageNum=1
+    })
+</script>
 </body>
 </html>

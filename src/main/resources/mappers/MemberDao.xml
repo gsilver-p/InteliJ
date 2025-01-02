@@ -5,7 +5,9 @@
 <!--
 1. parameterType은 생략 가능
 2. resultType="boolean" 생략 가능
-3. #{변수명}, #{필드명}, #{속성명}
+3. #{변수명}, #{필드명}, #{속성명} : 문자열인 경우 'aaa' 숫자인 경우 100
+4. 여러 레코드 반환 시 LiST 타입이 아닌 객체 타입 명시
+5. ${변수명}, ${필드명}, ${속성명} : 문자열인 경우 문자열 자체만으로 인식! (DB 컬럼명에 사용)
 -->
 
 <mapper namespace="com.example.board.dao.MemberDao">
