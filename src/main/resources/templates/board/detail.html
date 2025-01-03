@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script defer th:src="@{/js/common.js}"></script>
+
+    <script th:inline="javascript">
+        const m = [[${msg}]]
+        const mb = [[${session.member}]]
+        $(() => {
+            msgPrint()
+            loginStatus()
+        })
+    </script>
+</head>
+<body>
+<div class="wrap">
+    <th:block th:replace="~{fragments::header}"></th:block>
+    <section>
+        <div class="content">
+            <div class="write-form">
+                <div class="user-info">
+                    <div class="user-info-sub">
+                        <p th:text="|등급 [${session.member.g_name}]|"></p>
+                        <p th:text="|POINT [${session.member.m_point}]|"></p>
+                    </div>
+                </div>
+                <h2 class="login-header">상세 보기</h2>
+                <div>
+                    <div class="t_content p-15">NUM</div>
+                    <div class="d_content p-85" th:text="${boardDto.b_num}">글번호</div>
+                </div>
+                <div>
+                    <div class="t_content p-15">WRITER</div>
+                    <div class="d_content p-35" th:text="${boardDto.b_writer}">글쓴이</div>
+                    <div class="t_content p-15">DATE</div>
+                    <div class="d_content p-35" th:text="${boardDto.b_date}">등록일시</div>
+                </div>
+                <div>
+                    <div class="t_content p-15">TITLE</div>
+                    <div class="d_content p-85" th:text="${boardDto.b_title}">제목</div>
+                </div>
+                <div>
+                    <div class="t_content p-15 content_h">CONTENTS</div>
+                    <div class="d_content p-85 content_h" th:text="${boardDto.b_contents}">글내용</div>
+                    <!-- summernote form태그없을때는 div, form태그시는 textarea -->
+                </div>
+            </div>
+        </div>  <!-- content end -->
+        <!-- //form 택의 기본 값 : 특수문자 넣을 수 없음 -->
+        <!-- <form enctype="application/x-www-form-urlencoded">-->
+        <!-- <input type="text" value="{sdfd}">-->
+        <!-- </form>-->
+        <!-- 첨부파일 영역 -->
+        <!-- 버튼 영역-->
+        <div class="btn-area">
+            <!--타임리프 요소값을 인자로 전달방법 : 숫자만 가능-->
+            <!-- <button class="btn-write" id="upbtn"-->
+            <!-- th:onclick="'upload_board('+${boardDto.b_num}+')'">U-->
+            <!-- </button>-->
+            <!-- 위에랑 같은거! / 타임리프 요소값을 인자로 전달방법 : 숫자,문자 가능-->
+            <button class="btn-write" id="upbtn"
+                    th:bnum="${boardDto.b_num}"
+                    th:onclick="upload_board(this.getAttribute('bnum'))">U
+            </button>
+            <button class="btn-write" id="delbtn"
+                    th:data-bnum="${boardDto.b_num}"
+                    onclick="delete_board(this)">D
+                <!-- delete_board('icia')  -->
+            </button>
+
+            <button class="btn-sub" onclick="backbtn()">B</button>
+        </div>
+        <!-- 댓글 입력 양식-->
+        <form id="rform" class="write-form">
+            <!-- 게시글 정보(글번호), 댓글 내용, 접속자(작성자) -->
+            <input type="hidden" name="r_bnum" id="r_bnum"
+                   th:value="${boardDto.b_num}">
+            <textarea name="r_contents" rows="3" cols="80" class="write-input ta"
+                      id="r_contents" placeholder="댓글을 여기다 아주 그냥 다다다다다다"></textarea>
+            <input type="hidden" name="r_writer" id="r_writer"
+                   th:value="${session.member.m_id}">
+            <input type="button" value="등록해보자"
+                   class="btn-write" onclick="replyInsert()"
+                   style="width:100%; margin-bottom: 30px;">
+        </form>
+        <!-- 댓글 리스트 출력 영역-->
+        <table style="width: 50%" th:align="center">
+            <!-- 제목 테이블 -->
+            <tr class="rtbl-head">
+                <td class="p-20">WRITER</td>
+                <td class="p-50">CONTENTS</td>
+                <td class="p-30">DATE</td>
+            </tr>
+        </table>
+        <!-- 댓글 리스트 -->
+        <table style="width: 50%;" id="rtable">
+        </table>
+    </section>
+    <th:block th:replace="~{fragments::footer}"></th:block>
+</div> <!--wrap end -->
+<script th:inline="javascript">
+    function upload_board(bnum) {
+        console.log('update bnum: ' + bnum);
+    }
+
+    function delete_board(button) {
+        //let writer=button.getAttribute("data-writer")
+        let bnum = $(button).attr("data-bnum")
+        console.log('delete bnum:', bnum);
+        let result = confirm("정말 삭제할거야?ㅠ_ㅠ")
+        if (result) {
+            location.href = `/board/delete?b_num=${bnum}`;
+        }
+    }
+
+    function backbtn() {
+        location.href = "/board"
+    }
+
+    function replyInsert() {
+        console.log('id:', $('#r_writer').val());
+        let data = {};
+        data.r_contents = $('#r_contents').val();
+        data.r_bnum = $('#r_bnum').val();
+        // data.r_writer = $('#r_writer').val();
+        // 세션에서 꺼내오기
+        data.r_writer = [[${session.member.m_id}]];
+        console.log('data:', data);
+        $.ajax(
+            {
+                method: 'post',  // post, delete, put(전체필드변경), patch(일부필드변경 ex-업데이트)
+                url: '/board/reply',
+                // queryString 방식
+                // url : '/board/reply?r_bnum='+$('#r_bnum').val(),
+                // data : {r_bnum:$('#r_bnum').val(), ...}
+
+                // form태그 안에 끌어 올 내용이 얼마 없을 때
+                //data: data,   // data: {r_bnum:100, r_contents:'안녕', r_writer:'wldmsdl6276'}
+
+                // 1. urlEncoded 방식(get,post): 특수문자는 못넘겨
+                // data: $('#rform').serialize(), // form 태그 안에 데이터가 줄줄이 딸려와! ?r_contents='댓글1'&r_writer='....'&..
+                // contentType : "application/x-www-form-urlencoded" // header의 contentType 기본값
+
+                // 2. json 방식(only post): 특수문자 가능~! / 스프링서버에서 받을 때 @RequestBody
+                data: JSON.stringify(data), // {"r_bnum":34, "r_contents":"댓글1"}
+                contentType : "application/json;charset=UTF-8",  // json데이터 넘겨줘!
+                // dataType은 생략 가능(서버에서 header의 dataType을 자동인식 해!-스프링에서만! 서블릿은 생략 불가~!)
+                // dataType : 'json', // 'text(html)' , 'xml' , 'jsonp' , ... 생략가능!
+                // 이건 예전 버전! 요즘은 done, fail 쓴다
+                // success : function(resp){
+                //     console.log('resp:',resp)
+                // },
+                // error : function (err) {
+                //     console.log('err:',err)
+                // }
+            }
+        ).done(function (resp) {
+                console.log('resp:', resp)
+            }
+        )  // .done(resp=>console.log('resp:',resp))
+            .fail(function (err) {
+                console.log('err:', err)
+            });
+            // .fail(err=>console.log('err:',err))
+    } // reply Insert
+</script>
+</body>
+</html>

@@ -1,14 +1,18 @@
 package com.example.board.controller;
 
 import com.example.board.dto.BoardDto;
+import com.example.board.dto.MemberDto;
+import com.example.board.dto.ReplyDto;
 import com.example.board.dto.SearchDto;
 import com.example.board.service.BoardService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -68,11 +72,68 @@ public class BoardController {
         return "redirect:/";
     }
 
-    @GetMapping("/detail/{bnum}")
-    public String detail(@PathVariable("bnum") Integer bnum, Model model) {
-        log.info("==== con detail bnum:{}", bnum);
-        return null;
+//    @GetMapping("/detail/{bno}")
+//    public String detail(@PathVariable("bno") Integer bno, Model model) {
+//        log.info("==== con detail bno:{}", bno);
+//        return null;
+//    }
+
+    @GetMapping("/detail")
+    public String detailParam(@RequestParam("b_num")Integer b_num, Model model) {
+        log.info("==== con b_num:{}", b_num);
+        if(b_num == null || b_num < 1) {return "redirect:/board";}
+        BoardDto boardDto = boardService.getBoardDetail(b_num);
+        log.info("==== boardDto:{}", boardDto);
+        if(boardDto != null) {
+            model.addAttribute("boardDto", boardDto);
+            return "board/detail";
+        } else {
+            // ModelAndView mav = new ModelAndView();
+            return "redirect:/board";
+        }
     }
+
+    @GetMapping("/delete")
+    public String boardDelete(@RequestParam("b_num")Integer b_num, Model model, RedirectAttributes redirectAttributes) {
+        log.info("==== Delete b_num:{}", b_num);
+        if(b_num == null || b_num < 1) {
+            return "redirect:/board";
+        }
+        if(boardService.boardDelete(b_num)) {
+            redirectAttributes.addFlashAttribute("msg",b_num+"번 삭제 성공! 아쉽다..");  // 한 번 출력
+           // redirectAttributes.addAttribute("msg",b_num+"번 삭제 성공! 아쉽다.."); // 리퀘스트 객체에 저장 여러 번 출력
+            return "redirect:/board";
+        } else {
+            redirectAttributes.addFlashAttribute("msg",b_num+"번 삭제 실패^_^");
+            return "redirect:/board/detail?b_num="+b_num;
+        }
+    }
+
+    // 제이슨으로 안받을 때!!
+//    @PostMapping("/reply")
+//    @ResponseBody
+//    public String insertReply(@RequestParam("r_bnum") Integer r_bnum,
+//                              @RequestParam("r_contents") String r_contents,
+//                              HttpSession session) {
+//        log.info("==== insert r_bnum:{}", r_bnum);
+//        log.info("==== insert r_contents:{}", r_contents);
+//        String m_id = ((MemberDto)session.getAttribute("member")).getM_id();
+//        log.info("==== insert r_writer:{}", m_id);
+//        return "성공";
+//
+//    }
+
+    // 제이슨으로 받을 때!
+    @PostMapping("/reply")
+    @ResponseBody
+    public String insertReply(@RequestBody ReplyDto replyDto, HttpSession session) {
+        log.info("==== insert r_bnum:{}", replyDto.getR_bnum());
+        log.info("==== insert r_contents:{}", replyDto.getR_contents());
+        String m_id = ((MemberDto)session.getAttribute("member")).getM_id();
+        log.info("==== insert r_writer:{}", m_id);
+        return "성공";
+    }
+
 
     @GetMapping("/write")
     public String write() {

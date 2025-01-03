@@ -18,7 +18,8 @@ public class BoardDto {
     private String b_title;
     private String b_contents;
     private String b_writer;
-    private LocalDateTime b_date;
+    private LocalDateTime b_date;   // 다른 시간대로 변환 용이
+//    private String b_date;  단순 출력용
     private int b_view;
 
 }

@@ -25,4 +25,8 @@ public interface BoardDao {
     List<BoardDto> getBoardListSearch(SearchDto searchDto);
 
     List<BoardDto> getBoardListSearchNew(SearchDto searchDto);
+
+    BoardDto getBoardDetail(Integer bNum);
+
+    boolean baordDelete(Integer bNum);
 }

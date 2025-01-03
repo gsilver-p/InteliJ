@@ -63,4 +63,12 @@ public class BoardService {
         searchdto.setStartIndex((pageNum - 1) * searchdto.getListCnt());
         return boardDao.getBoardListSearchNew(searchdto);
     }
+
+    public BoardDto getBoardDetail(Integer b_num) {
+        return boardDao.getBoardDetail(b_num);
+    }
+
+    public boolean boardDelete(Integer b_num) {
+        return boardDao.baordDelete(b_num);
+    }
 }
