@@ -44,4 +44,8 @@ public class MemberService {
         memberDto.setM_pw(pwEncoder.encode(memberDto.getM_pw()));
         return memberdao.join(memberDto);  // 회원가입 성공 시 true, 실패 시 false
     }
+
+    public boolean isUsedId(String mId) {
+        return memberdao.isUsedId(mId);
+    }
 }

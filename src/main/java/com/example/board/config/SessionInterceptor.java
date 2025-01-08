@@ -19,7 +19,7 @@ public class SessionInterceptor implements AsyncHandlerInterceptor {
         log.info("★preHandler call queryString={}",request.getQueryString());
         HttpSession session = request.getSession();
         if(session.getAttribute("member") == null){
-            log.info("인터셉트!!! 로그인 안했지롱");
+            log.info("★★인터셉트!!!★★");
             session.setAttribute("preUrl_login",request.getRequestURI()+'?'+request.getQueryString());
             response.sendRedirect("/member/login");        // redirect는 get만 요청이 가능해
             return false;  // Controller 진입을 막는거야
