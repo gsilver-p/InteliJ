@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class BoardController {
 //    }
 
     @GetMapping
-    public String boardlist(SearchDto searchdto, Model model) {
+    public String boardlist(SearchDto searchdto, Model model, HttpSession session) {
         log.info("before searchdto:{}", searchdto);
         if (searchdto.getPageNum() == null)
             searchdto.setPageNum(1);
@@ -62,9 +63,19 @@ public class BoardController {
             // 동적 쿼리 작성 시
         // boardList = boardService.getBoardListSearch(searchdto);  // IF 문
         boardList = boardService.getBoardListSearch(searchdto);  // CHOOSE WHEN 문
+
         if (boardList != null) {
             // 페이지 정보
             String pageHtml = boardService.getPaging(searchdto);
+
+            // 상세보기에서 게시글 목록으로 돌아가는 방법!
+            if(searchdto.getColname() != null) {
+                session.setAttribute("searchdto",searchdto);
+                log.info("★ 검색중이었다면~? searchdto 세션에 저장!");
+            } else {
+                session.removeAttribute("searchdto");
+                session.setAttribute("pageNum",searchdto.getPageNum());
+            }
             model.addAttribute("paging", pageHtml);
             model.addAttribute("boardList", boardList);
             return "board/boardlist";
@@ -140,9 +151,24 @@ public class BoardController {
         return "board/write";
     }
 
+//    @PostMapping("/write")
+//    public String write(BoardDto boardDto,@RequestPart List<MultipartFile> attachments) {
+//        log.info("★ write boardDto:{}", boardDto);
+//        log.info("write attachments:{}", attachments.size());
+//        for(MultipartFile file: attachments) {
+//        log.info("★ write attachments:{}", attachments.getOriginalFilename());
+//        }
+//        return "redirect:/board";
+//    }
+
     @PostMapping("/write")
     public String write(BoardDto boardDto) {
-        // DB에 글을 저장
-        return "redirect:/board/boardlist";
+        log.info("★ write boardDto: {}",boardDto);
+        log.info("★ write boardDto attachments.size :{}",boardDto.getAttachments().size());
+        for(MultipartFile file : boardDto.getAttachments()) {
+            log.info("file: {}",file.getOriginalFilename());
+            log.info("file.getsize():{}",file.getSize());  // byte단위 사이즈
+        }
+            return "redirect:/board";
     }
 }

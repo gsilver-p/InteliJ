@@ -57,12 +57,21 @@
                 console.log('resp:',resp);
                 console.log('status:',status);
                 console.log('xhr:',xhr);
-                $('#checkMsg').html(resp).css('color','green')
+                // String으로 반환할 때(MemberRestController)
+                // $('#checkMsg').html(resp).css('color','green')
+
+                // Boolean으로 반환할 때
+                if(resp == true){
+                    $('#checkMsg').html('사용 가능한 ID야^_^').css('color','green');
+                    isCheck = true;
+                } else {
+                    $('#checkMsg').html('이미 존재하는걸..').css('color','red')
+                }
                 isCheck = true;
             }).fail((err, status) => {
                 console.log('err:',err)
                 console.log('status:',status)
-                $('#checkMsg').html(err.responseText).css('color','red')
+                // $('#checkMsg').html(err.responseText).css('color','red')
                 isCheck = false;
             })
         }

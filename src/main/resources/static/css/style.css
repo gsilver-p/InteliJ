@@ -9,7 +9,7 @@ html {
 body {
 	margin: 0;
 	height: 100%;
-	background-color: #dbdffd;
+	background-color: #fffae4;
 }
 
 section {
@@ -20,7 +20,7 @@ section {
 * top-bar
 */
 .top-bar {
-	background-color: #2e2e2e;
+	background-color: #073500;
 	color: #fff;
 	min-height: 58px;
 	line-height: 58px;
@@ -421,7 +421,7 @@ span.file-title {
 	left: 0;
 	bottom: 0;
 	width: 100%;
-	background-color: #5b5b5b;
+	background-color: #073500;
 	color: #fff;
 	min-height: 58px;
 	line-height: 58px;
@@ -479,14 +479,14 @@ span.file-title {
 	line-height: 1.5;
 	border-radius: 6px;
 	color: #fff;
-	background-color: #ff2f34;
-	border-color: #ff0000;
+	background-color: #013901;
+	border-color: #fff5ec;
 	margin-top: 10px;
 }
 
 .btn-write[type="reset"], .btn-write[type="button"] {
-	background-color: #ff2f34;
-	border-color: #ff7575;
+	background-color: #013901;
+	border-color: #fff5ec;
 }
 
 .btn-sub {

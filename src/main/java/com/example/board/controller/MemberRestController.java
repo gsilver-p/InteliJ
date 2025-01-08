@@ -29,14 +29,21 @@ public class MemberRestController {
 //    }
 
     // 위에꺼 짧게 단축 버전
+//    @GetMapping("/idcheck")
+//    public ResponseEntity<String> idcheck(String m_id) {
+//        log.info("idcheck m_id:{}", m_id);
+//        // return ResponseEntity.ok(!memberService.isUsedId(m_id));
+//        if(!memberService.isUsedId(m_id)) {
+//            return ResponseEntity.ok().body("사용할 수 있는 ID지롱!");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("이미 사용 중인 ID인걸..");
+//        }
+//    }
+
+    // MemberDao 사용
     @GetMapping("/idcheck")
-    public ResponseEntity<String> idcheck(String m_id) {
+    public ResponseEntity<Boolean> idcheck(String m_id) {
         log.info("idcheck m_id:{}", m_id);
-        // return ResponseEntity.ok(!memberService.isUsedId(m_id));
-        if(!memberService.isUsedId(m_id)) {
-            return ResponseEntity.ok().body("사용할 수 있는 ID지롱!");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("이미 사용 중인 ID인걸..");
-        }
+         return ResponseEntity.ok(!memberService.isUsedId(m_id));
     }
 }
