@@ -5,16 +5,18 @@ import com.example.board.dto.MemberDto;
 import com.example.board.dto.ReplyDto;
 import com.example.board.dto.SearchDto;
 import com.example.board.service.BoardService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
+import java.util.Enumeration;
 import java.util.List;
 
 
@@ -60,7 +62,7 @@ public class BoardController {
         //            boardList = boardService.getBoardList(searchdto);
         //        }
 
-            // 동적 쿼리 작성 시
+        // 동적 쿼리 작성 시
         // boardList = boardService.getBoardListSearch(searchdto);  // IF 문
         boardList = boardService.getBoardListSearch(searchdto);  // CHOOSE WHEN 문
 
@@ -69,12 +71,12 @@ public class BoardController {
             String pageHtml = boardService.getPaging(searchdto);
 
             // 상세보기에서 게시글 목록으로 돌아가는 방법!
-            if(searchdto.getColname() != null) {
-                session.setAttribute("searchdto",searchdto);
+            if (searchdto.getColname() != null) {
+                session.setAttribute("searchdto", searchdto);
                 log.info("★ 검색중이었다면~? searchdto 세션에 저장!");
             } else {
                 session.removeAttribute("searchdto");
-                session.setAttribute("pageNum",searchdto.getPageNum());
+                session.setAttribute("pageNum", searchdto.getPageNum());
             }
             model.addAttribute("paging", pageHtml);
             model.addAttribute("boardList", boardList);
@@ -90,12 +92,14 @@ public class BoardController {
 //    }
 
     @GetMapping("/detail")
-    public String detailParam(@RequestParam("b_num")Integer b_num, Model model) {
+    public String detailParam(@RequestParam("b_num") Integer b_num, Model model) {
         log.info("==== con b_num:{}", b_num);
-        if(b_num == null || b_num < 1) {return "redirect:/board";}
+        if (b_num == null || b_num < 1) {
+            return "redirect:/board";
+        }
         BoardDto boardDto = boardService.getBoardDetail(b_num);
         log.info("==== boardDto:{}", boardDto);
-        if(boardDto != null) {
+        if (boardDto != null) {
             model.addAttribute("boardDto", boardDto);
             return "board/detail";
         } else {
@@ -105,46 +109,20 @@ public class BoardController {
     }
 
     @GetMapping("/delete")
-    public String boardDelete(@RequestParam("b_num")Integer b_num, Model model, RedirectAttributes redirectAttributes) {
+    public String boardDelete(@RequestParam("b_num") Integer b_num, Model model, RedirectAttributes redirectAttributes) {
         log.info("==== Delete b_num:{}", b_num);
-        if(b_num == null || b_num < 1) {
+        if (b_num == null || b_num < 1) {
             return "redirect:/board";
         }
-        if(boardService.boardDelete(b_num)) {
-            redirectAttributes.addFlashAttribute("msg",b_num+"번 삭제 성공! 아쉽다..");  // 한 번 출력
-           // redirectAttributes.addAttribute("msg",b_num+"번 삭제 성공! 아쉽다.."); // 리퀘스트 객체에 저장 여러 번 출력
+        if (boardService.boardDelete(b_num)) {
+            redirectAttributes.addFlashAttribute("msg", b_num + "번 삭제 성공! 아쉽다..");  // 한 번 출력
+            // redirectAttributes.addAttribute("msg",b_num+"번 삭제 성공! 아쉽다.."); // 리퀘스트 객체에 저장 여러 번 출력
             return "redirect:/board";
         } else {
-            redirectAttributes.addFlashAttribute("msg",b_num+"번 삭제 실패^_^");
-            return "redirect:/board/detail?b_num="+b_num;
+            redirectAttributes.addFlashAttribute("msg", b_num + "번 삭제 실패^_^");
+            return "redirect:/board/detail?b_num=" + b_num;
         }
     }
-
-    // 제이슨으로 안받을 때!!
-//    @PostMapping("/reply")
-//    @ResponseBody
-//    public String insertReply(@RequestParam("r_bnum") Integer r_bnum,
-//                              @RequestParam("r_contents") String r_contents,
-//                              HttpSession session) {
-//        log.info("==== insert r_bnum:{}", r_bnum);
-//        log.info("==== insert r_contents:{}", r_contents);
-//        String m_id = ((MemberDto)session.getAttribute("member")).getM_id();
-//        log.info("==== insert r_writer:{}", m_id);
-//        return "성공";
-//
-//    }
-
-    // 제이슨으로 받을 때!
-    @PostMapping("/reply")
-    @ResponseBody
-    public String insertReply(@RequestBody ReplyDto replyDto, HttpSession session) {
-        log.info("==== insert r_bnum:{}", replyDto.getR_bnum());
-        log.info("==== insert r_contents:{}", replyDto.getR_contents());
-        String m_id = ((MemberDto)session.getAttribute("member")).getM_id();
-        log.info("==== insert r_writer:{}", m_id);
-        return "성공";
-    }
-
 
     @GetMapping("/write")
     public String write() {
@@ -162,13 +140,33 @@ public class BoardController {
 //    }
 
     @PostMapping("/write")
-    public String write(BoardDto boardDto) {
-        log.info("★ write boardDto: {}",boardDto);
-        log.info("★ write boardDto attachments.size :{}",boardDto.getAttachments().size());
-        for(MultipartFile file : boardDto.getAttachments()) {
-            log.info("file: {}",file.getOriginalFilename());
-            log.info("file.getsize():{}",file.getSize());  // byte단위 사이즈
+    public String write(BoardDto boardDto, HttpSession session, RedirectAttributes redirectAttributes) {
+        // tomcat rootPath: main/webapp
+        // realPath: main/webapp/...
+
+        // 내가 가지고 있는 파일이름과 같은 이름으로 다른 사람이 업로드하게 될 경우 덮어씌워지니까 각 ID를 부여해줘야해!(그건 내가 만드는거)
+//        String realPath = session.getServletContext().getRealPath("/");
+//        log.info("realPath:{}", realPath);
+//        realPath += "upload/";
+//        log.info("realPath:{}", realPath);
+//        File dir = new File(realPath);
+//        if(!dir.exists()) {
+//            dir.mkdir();
+//        }
+        log.info("★ write boardDto: {}", boardDto);
+        log.info("★ write boardDto attachments.size :{}", boardDto.getAttachments().size());
+        for (MultipartFile file : boardDto.getAttachments()) {
+            log.info("file:{}", file.getOriginalFilename());
+            log.info("file.getSize():{}", file.getSize());  // byte단위 사이즈
+            log.info("file.getSize():{}", file.isEmpty());
         }
+        boolean result = boardService.boardWrite(boardDto, session);
+        if(result) {
+            redirectAttributes.addFlashAttribute("msg","글쓰기 성공!");
             return "redirect:/board";
+        } else {
+            redirectAttributes.addFlashAttribute("msg","글쓰기 실패ㅠㅠ");
+            return "redirect:/board/write";
+        }
     }
 }

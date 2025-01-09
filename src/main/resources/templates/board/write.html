@@ -33,7 +33,7 @@
                 <!--로그인 id(hidden처리), 제목, 내용, 파일첨부-->
                 <input type="hidden" name="b_writer" th:value="${session.member?.m_id}">
                 <input type="text" name="b_title" class="write-input" autofocus placeholder="짠짠 제목을 쓰자" required>
-                <textarea row="15" name="b_contents" placeholder="이제 내용을 적자^_^" class="write-input ta">
+                <textarea row="15" col="80" name="b_contents" class="write-input ta" placeholder="이제 내용을 적자^_^">
 
                 </textarea>
                 <div class = "filebox">

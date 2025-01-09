@@ -5,6 +5,7 @@
     <title>Title</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
     <script defer th:src="@{/js/common.js}"></script>
 
     <script th:inline="javascript">
@@ -88,7 +89,7 @@
                    style="width:100%; margin-bottom: 30px;">
         </form>
         <!-- 댓글 리스트 출력 영역-->
-        <table style="width: 50%" th:align="center">
+        <table style="width: 80%" th:align="center">
             <!-- 제목 테이블 -->
             <tr class="rtbl-head">
                 <td class="p-20">WRITER</td>
@@ -118,10 +119,19 @@
     }
 
     function backbtn() {
-        location.href = "/board"
+        let url = "/board?";
+        let col = [[${session.searchdto?.colname}]]
+        let keyw = [[${session.searchdto?.keyword}]]
+        if(col == null) {
+            url+=`pageNum=[[${session.pageNum}]]`;
+        } else {
+            url+='colname='+[[${session.searchdto?.colname}]]+'&keyword='+[[${session.searchdto?.keyword}]]+
+                '&pageNum='+[[${session.searchdto?.pageNum}]]
+        }
+        location.href = url;
     }
 
-    function replyInsert() {
+    function replyInsert() {  // jquery
         console.log('id:', $('#r_writer').val());
         let data = {};
         data.r_contents = $('#r_contents').val();
@@ -130,42 +140,61 @@
         // 세션에서 꺼내오기
         data.r_writer = [[${session.member.m_id}]];
         console.log('data:', data);
-        $.ajax(
-            {
+
+        // axios 버전
+        // axios({
+        //     method: 'post',
+        //     url: '/board/reply',
+        //     data: data  // params: data는 get! data: data는 posst
+        // }).then(resp => console.log(resp))
+        //     .catch(err => console.log(err))
+
+        // axios(post) 간소화 버전
+        // axois.post('/board/reply', data)
+        //     .then(resp => console.log('resp:',resp))
+        //     .catch(err => console.log('err:',err))
+
+        // axios(get) 간소화 버전
+        // axios.get('/board/reply?r_bnum=1000', {params: {data}})
+        //     .then(resp => console.log('resp:', resp))
+        //     .catch(err => console.log('err:',err))
+
+        // ajax
+        $.ajax({
                 method: 'post',  // post, delete, put(전체필드변경), patch(일부필드변경 ex-업데이트)
-                url: '/board/reply',
-                // queryString 방식
-                // url : '/board/reply?r_bnum='+$('#r_bnum').val(),
-                // data : {r_bnum:$('#r_bnum').val(), ...}
-
-                // form태그 안에 끌어 올 내용이 얼마 없을 때
-                //data: data,   // data: {r_bnum:100, r_contents:'안녕', r_writer:'wldmsdl6276'}
-
-                // 1. urlEncoded 방식(get,post): 특수문자는 못넘겨
-                // data: $('#rform').serialize(), // form 태그 안에 데이터가 줄줄이 딸려와! ?r_contents='댓글1'&r_writer='....'&..
-                // contentType : "application/x-www-form-urlencoded" // header의 contentType 기본값
-
-                // 2. json 방식(only post): 특수문자 가능~! / 스프링서버에서 받을 때 @RequestBody
-                data: JSON.stringify(data), // {"r_bnum":34, "r_contents":"댓글1"}
-                contentType : "application/json;charset=UTF-8",  // json데이터 넘겨줘!
-                // dataType은 생략 가능(서버에서 header의 dataType을 자동인식 해!-스프링에서만! 서블릿은 생략 불가~!)
-                // dataType : 'json', // 'text(html)' , 'xml' , 'jsonp' , ... 생략가능!
-                // 이건 예전 버전! 요즘은 done, fail 쓴다
-                // success : function(resp){
-                //     console.log('resp:',resp)
-                // },
-                // error : function (err) {
-                //     console.log('err:',err)
-                // }
-            }
-        ).done(function (resp) {
-                console.log('resp:', resp)
-            }
-        )  // .done(resp=>console.log('resp:',resp))
-            .fail(function (err) {
-                console.log('err:', err)
-            });
-            // .fail(err=>console.log('err:',err))
+                 url: '/board/reply',
+        //         // queryString 방식
+        //         // url : '/board/reply?r_bnum='+$('#r_bnum').val(),
+        //         // data : {r_bnum:$('#r_bnum').val(), ...}
+        //
+        //         // form태그 안에 끌어 올 내용이 얼마 없을 때
+        //          data: data,   // data: {r_bnum:100, r_contents:'안녕', r_writer:'wldmsdl6276'}
+                 data: JSON.stringify(data),
+        //
+        //         // 1. urlEncoded 방식(get,post): 특수문자가 포함되어 깨질 경우 url 인코딩해서 서버에 넘기자!
+        //         // data: $('#rform').serialize(), // form 태그 안에 데이터가 줄줄이 딸려와! ?r_contents='댓글1'&r_writer='....'&..
+                  //contentType : "application/x-www-form-urlencoded" // header의 contentType 기본값
+        //
+        //         // 2. json 방식(only post): 특수문자 가능~! / 스프링서버에서 받을 때 @RequestBody
+        //         data:JSON.stringify(data), // {"r_bnum":34, "r_contents":"댓글1"}
+                contentType: "application/json;charset=UTF-8",  // json데이터 넘겨줘!
+        //         // dataType은 생략 가능(서버에서 header의 dataType을 자동인식 해!-스프링에서만! 서블릿은 생략 불가~!)
+        //         // dataType : 'json', // 'text(html)' , 'xml' , 'jsonp' , ... 생략가능!
+        //         // 이건 예전 버전! 요즘은 done, fail 쓴다
+        //         // success : function(resp){
+        //         //     console.log('resp:',resp)
+        //         // },
+        //         // error : function (err) {
+        //         //     console.log('err:',err)
+        //         // }
+             }).done(function (resp) {
+              console.log('resp:', resp)
+             })
+            // .done(resp=>console.log('resp:',resp))
+         .fail(function (err) {
+                 console.log('err:', err)
+             })
+        //.fail(err=>console.log('err:',err);
     } // reply Insert
 </script>
 </body>
