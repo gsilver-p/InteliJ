@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 @Builder
 @Accessors(chain = true)
 public class ReplyDto {
+    // 스프링 Validation
     private int r_bnum;
     private String r_contents;
     private String r_writer;

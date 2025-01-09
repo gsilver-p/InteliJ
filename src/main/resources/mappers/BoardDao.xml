@@ -46,4 +46,21 @@
     <delete id="baordDelete">
         delete from board where b_num=#{b_num};
     </delete>
+
+    <!--Oracle - selectKey만 사용가능-->
+<!--<insert id="boardWriteSelectKey" parameterType="BoardDto">-->
+<!-- insert into board values(null,#{b_title},#{b_contents},#{b_writer},default,default)-->
+<!--<selectKey keyProperty="b_num" resultType="Integer" order="AFTER">-->
+<!--select last_insert_id()   &lt;!&ndash;가장 최근 오토인크리먼트 생성 값&ndash;&gt;-->
+<!--</selectKey>-->
+<!-- </insert>-->
+
+    <!--MySql - selectKeym useGeneratedKeys(간단,권장) 가능-->
+    <insert id="boardWriteSelectKey" useGeneratedKeys="true" keyProperty="b_num">
+        insert into board values(null,#{b_title},#{b_contents},#{b_writer},default,default)
+    </insert>
+
+    <insert id="fileInsertMap" parameterType="HashMap">
+        insert into boardfile values(null,#{b_num},#{oriFileName},#{sysFileName})
+    </insert>
 </mapper>

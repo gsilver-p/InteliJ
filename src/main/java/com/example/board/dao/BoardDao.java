@@ -29,4 +29,8 @@ public interface BoardDao {
     BoardDto getBoardDetail(Integer bNum);
 
     boolean baordDelete(Integer bNum);
+
+    boolean boardWriteSelectKey(BoardDto boardDto);
+
+    boolean fileInsertMap(Map<String, String> fMap);
 }

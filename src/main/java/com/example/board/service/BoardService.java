@@ -1,9 +1,13 @@
 package com.example.board.service;
 
+import com.example.board.common.FileManager;
 import com.example.board.common.Paging;
 import com.example.board.dao.BoardDao;
+import com.example.board.dao.MemberDao;
 import com.example.board.dto.BoardDto;
+import com.example.board.dto.MemberDto;
 import com.example.board.dto.SearchDto;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,8 @@ public class BoardService {
     public static final Integer PAGECOUNT = 2;
 
     private final BoardDao boardDao;
+    private final MemberDao memberDao;
+    private final FileManager fm;
 
     public List<BoardDto> getBoardList(Integer pageNum) {
         // select * from board order b_date desc limit 0,10  , 1page
@@ -33,13 +39,13 @@ public class BoardService {
 
     public String getPaging(SearchDto searchdto) {
         int totalNum = boardDao.getBoardCount(searchdto);
-       log.info("totalNum="+totalNum);
-       String listUrl = null;
-       if(searchdto.getColname() != null) {
-           listUrl = "/board?colname=" + searchdto.getColname()+"&keyword=" + searchdto.getKeyword()+"&";
-       } else {
-           listUrl = "/board?";
-       }
+        log.info("totalNum=" + totalNum);
+        String listUrl = null;
+        if (searchdto.getColname() != null) {
+            listUrl = "/board?colname=" + searchdto.getColname() + "&keyword=" + searchdto.getKeyword() + "&";
+        } else {
+            listUrl = "/board?";
+        }
         Paging paging = new Paging(totalNum, searchdto.getPageNum(), listcnt, PAGECOUNT, listUrl);
         return paging.makeHtmlPaging();
     }
@@ -54,7 +60,7 @@ public class BoardService {
     public List<BoardDto> getBoardListSearch(SearchDto searchdto) {
         Integer pageNum = searchdto.getPageNum();
         searchdto.setStartIndex((pageNum - 1) * searchdto.getListCnt());
-        log.info("pageNum="+searchdto);
+        log.info("pageNum=" + searchdto);
         return boardDao.getBoardListSearch(searchdto);
     }
 
@@ -70,5 +76,35 @@ public class BoardService {
 
     public boolean boardDelete(Integer b_num) {
         return boardDao.baordDelete(b_num);
+    }
+
+
+    public boolean boardWrite(BoardDto boardDto, HttpSession session) {
+        // 1. 글번호(100), 글제목, 글내용, 글쓴이, ... insert!
+        // 1-1. select 글번호! (1, 1-1 동시진행)
+        // 2. 첨부파일이 존재한다면 글번호(100), 원파일명, 난수파일명 insert!
+        boolean result = boardDao.boardWriteSelectKey(boardDto);  //insert하면서 select도 같이!
+        log.info("새 글 번호:{}", boardDto.getB_num());
+        if (result) {
+            // 글 쓸 때마다 point 10점 부여
+            MemberDto memberDto = (MemberDto)session.getAttribute("member");
+            int point = memberDto.getM_point() + 10;
+            if(point > 100) {point = 100;}
+            memberDto.setM_point(point);
+            //memberDao.updateMemberPoint(memberDto);
+            MemberDto member = memberDao.getMemberInfo(memberDto.getM_id()); // 회원의 최신정보 가져오자!
+            session.setAttribute("memberDto", member);
+            // 첨부파일 여부 확인
+            if (!boardDto.getAttachments().get(0).isEmpty()) {
+                // 파일 업로드하고, DB insert
+                if(fm.fileUpload(boardDto.getAttachments(),session,boardDto.getB_num())) {
+                    log.info("★upload ok!");
+                    return true;
+                }
+            }
+            return true; // 첨부파일 없이 글쓰기만 성공!
+        } else {
+            return false;  // 글쓰기 실패야
+        }
     }
 }
