@@ -63,4 +63,8 @@
     <insert id="fileInsertMap" parameterType="HashMap">
         insert into boardfile values(null,#{b_num},#{oriFileName},#{sysFileName})
     </insert>
+
+    <select id="getBoardFileList" resultType="com.example.board.dto.BoardFile">
+        select bf_orifilename, bf_sysfilename from boardfile where bf_bnum=#{bNum}
+    </select>
 </mapper>

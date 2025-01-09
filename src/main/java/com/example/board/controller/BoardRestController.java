@@ -1,5 +1,7 @@
 package com.example.board.controller;
 
+import com.example.board.common.FileManager;
+import com.example.board.dto.BoardFile;
 import com.example.board.dto.ReplyDto;
 import com.example.board.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +11,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController // @ResponseBody가 기본 값
 @Slf4j
@@ -20,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 public class BoardRestController {
     @Autowired
     private BoardService boardService;
+    @Autowired
+    private FileManager fm;
 
     // 제이슨으로 안받을 때!!
 //    @PostMapping("/reply")
@@ -44,5 +52,17 @@ public class BoardRestController {
         return replyDto;
     }
 
-
+    @GetMapping("/download")
+    public ResponseEntity<Resource> download(BoardFile boardFile, HttpSession session) {
+        log.info("====orginfilename:{}", boardFile.getBf_orifilename());
+        log.info("====sysfilename:{}", boardFile.getBf_sysfilename());
+        // 다운로드 메소드 호출 ---> 브라우저 다운로드 됨
+        try {
+            ResponseEntity<Resource> resp = fm.fileDownload(boardFile, session);
+            return resp;
+        } catch (IOException e) {
+            log.info("*****파일 다운로드 예외");
+            throw new RuntimeException(e);
+        }
+    }
 }

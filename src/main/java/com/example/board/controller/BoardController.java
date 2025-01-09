@@ -1,9 +1,6 @@
 package com.example.board.controller;
 
-import com.example.board.dto.BoardDto;
-import com.example.board.dto.MemberDto;
-import com.example.board.dto.ReplyDto;
-import com.example.board.dto.SearchDto;
+import com.example.board.dto.*;
 import com.example.board.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -28,6 +25,10 @@ public class BoardController {
     //@Autowired
     private final BoardService boardService;
 
+    @GetMapping("/viewimg")
+    public String viewimg(Model model) {
+        return "board/viewimg";
+    }
 
 //    @GetMapping
 //    public String boardlist(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum, Model model) {
@@ -100,6 +101,12 @@ public class BoardController {
         BoardDto boardDto = boardService.getBoardDetail(b_num);
         log.info("==== boardDto:{}", boardDto);
         if (boardDto != null) {
+            // 댓글 리스트 가져오기! (동기 or 비동기)
+            // List<ReplyDto> rList = boardService.getReplyList(b_num);
+            // 첨부파일 리스트 가져오기
+            List<BoardFile> boardFileList = boardService.getBoardFileList(b_num);
+            model.addAttribute("boardFileList", boardFileList);
+            log.info("★★★★★ boardfileList:{},{}", boardFileList.size(), boardFileList);
             model.addAttribute("boardDto", boardDto);
             return "board/detail";
         } else {

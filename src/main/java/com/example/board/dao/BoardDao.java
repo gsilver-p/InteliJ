@@ -1,6 +1,7 @@
 package com.example.board.dao;
 
 import com.example.board.dto.BoardDto;
+import com.example.board.dto.BoardFile;
 import com.example.board.dto.SearchDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -33,4 +34,6 @@ public interface BoardDao {
     boolean boardWriteSelectKey(BoardDto boardDto);
 
     boolean fileInsertMap(Map<String, String> fMap);
+
+    List<BoardFile> getBoardFileList(Integer bNum);
 }

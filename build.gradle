@@ -37,8 +37,11 @@ dependencies {
     // log4j ---> logback ---> log4j2
     // log4jdbc-log4j2-jdbc4.1 : 이미 있는 logback을 활용한 로그 출력
     implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
-    // spring-security-core(전체적인 보안 관리):우리는 비번 암호화만 해보자!
+    // spring-security-core(전체적인 보안 관리):우리는 일단 비번 암호화만 해보자!
     implementation 'org.springframework.security:spring-security-core'
+    // commons-io: JAVA에서 파일 및 스트림 처리와 관련된 작업을 할 때 사용해
+    // io는 클라이언트와 서버가 입,출력할 때 사용해!
+    implementation 'commons-io:commons-io:2.16.1'
 
 
 

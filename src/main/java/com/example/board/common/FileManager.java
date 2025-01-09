@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.board.dto.BoardFile;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URLEncoder;
+import java.util.UUID;
 
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -66,10 +68,18 @@ public class FileManager {
             System.out.println("원조 파일:" + oriFileName);
             fMap.put("oriFileName", oriFileName);
             // 4.시스템파일이름 생성 a.txt ==>112323242424.txt
-            String sysFileName = System.currentTimeMillis() + "."
-                    + oriFileName.substring(oriFileName.lastIndexOf(".") + 1);
+            // String sysFileName = System.currentTimeMillis() + "."
+            //         + oriFileName.substring(oriFileName.lastIndexOf(".") + 1);
+
+            // uuid를 써보자~!
+            //String 확장자 = oriFileName.substring(oriFileName.lastIndexOf(".")+1);
+
+            // commons-io 기능 활용해보자!
+            String ext = FilenameUtils.getExtension(oriFileName);  // jpg, png 등 알아서 가져와줘
+            String sysFileName = UUID.randomUUID().toString()+"."+ ext;
             System.out.println("서버 파일:" + sysFileName);
             fMap.put("sysFileName", sysFileName);
+
 
             // 5.메모리->실제 파일 업로드
             try {

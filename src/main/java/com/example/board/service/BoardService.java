@@ -5,6 +5,7 @@ import com.example.board.common.Paging;
 import com.example.board.dao.BoardDao;
 import com.example.board.dao.MemberDao;
 import com.example.board.dto.BoardDto;
+import com.example.board.dto.BoardFile;
 import com.example.board.dto.MemberDto;
 import com.example.board.dto.SearchDto;
 import jakarta.servlet.http.HttpSession;
@@ -89,9 +90,9 @@ public class BoardService {
             // 글 쓸 때마다 point 10점 부여
             MemberDto memberDto = (MemberDto)session.getAttribute("member");
             int point = memberDto.getM_point() + 10;
-            if(point > 100) {point = 100;}
+            if(point > 999) {point = 999;}
             memberDto.setM_point(point);
-            //memberDao.updateMemberPoint(memberDto);
+            memberDao.updateMemberPoint(memberDto);
             MemberDto member = memberDao.getMemberInfo(memberDto.getM_id()); // 회원의 최신정보 가져오자!
             session.setAttribute("memberDto", member);
             // 첨부파일 여부 확인
@@ -107,4 +108,9 @@ public class BoardService {
             return false;  // 글쓰기 실패야
         }
     }
+
+    public List<BoardFile> getBoardFileList(Integer bNum) {
+        return boardDao.getBoardFileList(bNum);
+    }
+
 }
