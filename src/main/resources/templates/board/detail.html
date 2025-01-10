@@ -51,39 +51,39 @@
                     <!-- summernote form태그없을때는 div, form태그시는 textarea -->
                 </div>
             </div>
-        </div>  <!-- content end -->
-        <!-- //form 택의 기본 값 : 특수문자 넣을 수 없음 -->
-        <!-- <form enctype="application/x-www-form-urlencoded">-->
-        <!-- <input type="text" value="{sdfd}">-->
-        <!-- </form>-->
-        <!-- 첨부파일 영역 -->
-        <div>
-            <div class="t_content p-15 file_h">FILES</div>
-            <div class="d_content p-85 file_h" style="overflow: auto;">
-                <th:block th:if="${#lists.isEmpty(boardFileList)}">S
-                    첨부 된 파일이 없슴둥ㅠ_ㅠ
-                </th:block>
-                <th:block th:unless="${#lists.isEmpty(boardFileList)}">
-                    <th:block th:each="file:${boardFileList}">
-                        <!--                        <img th:src="@{|/upload/${file.getBf_sysfilename()}|}" width="100">-->
-                        <a th:href="@{|/board/download?bf_sysfilename=${file.bf_sysfilename}&bf_orifilename=${file.bf_orifilename}|}">
-                            <i class='far fa-file' style='font-size: 20px'></i>
-                            <span th:text="${file.bf_orifilename}"></span>
-                        </a>
+            <!-- //form 택의 기본 값 : 특수문자 넣을 수 없음 -->
+            <!-- <form enctype="application/x-www-form-urlencoded">-->
+            <!-- <input type="text" value="{sdfd}">-->
+            <!-- </form>-->
+            <!-- 첨부파일 영역 -->
+            <div>
+                <div class="t_content p-15 file_h">FILES</div>
+                <div class="d_content p-85 file_h" style="overflow: auto;">
+                    <th:block th:if="${#lists.isEmpty(boardDto.boardFileList)}">
+                        첨부 된 파일이 없슴둥ㅠ_ㅠ
                     </th:block>
-                </th:block>
+                    <th:block th:unless="${#lists.isEmpty(boardDto.boardFileList)}">
+                        <th:block th:each="file:${boardDto.boardFileList}">
+                            <!--                        <img th:src="@{|/upload/${file.getBf_sysfilename()}|}" width="100">-->
+                            <a th:href="@{|/board/download?bf_sysfilename=${file.bf_sysfilename}&bf_orifilename=${file.bf_orifilename}|}">
+                                <i class='far fa-file' style='font-size: 20px'></i>
+                                <span th:text="${file.bf_orifilename}"></span>
+                            </a>
+                        </th:block>
+                    </th:block>
+                </div>
             </div>
-        </div>
+        </div>  <!-- content end -->
         <!-- 버튼 영역-->
         <div class="btn-area">
             <!--타임리프 요소값을 인자로 전달방법 : 숫자만 가능-->
-            <!-- <button class="btn-write" id="upbtn"-->
-            <!-- th:onclick="'upload_board('+${boardDto.b_num}+')'">U-->
-            <!-- </button>-->
-            <!-- 위에랑 같은거! / 타임리프 요소값을 인자로 전달방법 : 숫자,문자 가능-->
             <button class="btn-write" id="upbtn"
-                    th:bnum="${boardDto.b_num}"
-                    th:onclick="upload_board(this.getAttribute('bnum'))">U
+                    th:onclick="'update_board('+${boardDto.b_num}+')'">U
+            </button>
+            <!-- 위에랑 같은거! / 타임리프 요소값을 인자로 전달방법 : 숫자,문자 가능-->
+            <!-- <button class="btn-write" id="upbtn"-->
+            <!-- th:bnum="${boardDto.b_num}"-->
+            <!-- th:onclick="update_board(this.getAttribute('bnum'))">U-->
             </button>
             <button class="btn-write" id="delbtn"
                     th:data-bnum="${boardDto.b_num}"
@@ -122,8 +122,9 @@
     <th:block th:replace="~{fragments::footer}"></th:block>
 </div> <!--wrap end -->
 <script th:inline="javascript">
-    function upload_board(bnum) {
+    function update_board(bnum) {  // 인자가 숫자만 가능
         console.log('update bnum: ' + bnum);
+        location.href="/board/update?b_num="+bnum;
     }
 
     function delete_board(button) {
@@ -196,7 +197,7 @@
             //         // 2. json 방식(only post): 특수문자 가능~! / 스프링서버에서 받을 때 @RequestBody
             //         data:JSON.stringify(data), // {"r_bnum":34, "r_contents":"댓글1"}
             contentType: "application/json;charset=UTF-8",  // json데이터 넘겨줘!
-            //         // dataType은 생략 가능(서버에서 header의 dataType을 자동인식 해!-스프링에서만! 서블릿은 생략 불가~!)
+            //         // dataType은 생략 가능(서버에서 header의 ★mimeType을 자동인식 해!-스프링에서만! 서블릿은 생략 불가~!)
             //         // dataType : 'json', // 'text(html)' , 'xml' , 'jsonp' , ... 생략가능!
             //         // 이건 예전 버전! 요즘은 done, fail 쓴다
             //         // success : function(resp){

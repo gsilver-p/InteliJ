@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css"/>
+    <script defer th:src="@{/js/common.js}"></script>
+
+    <script th:inline="javascript">
+        const m = [[${msg}]]
+        const mb = [[${session.member}]]
+        $(() => {
+            msgPrint()
+            loginStatus()
+        })
+    </script>
+</head>
+<body>
+<div class="wrap">
+    <th:block th:replace="~{fragments::header}"></th:block>
+
+    <section>
+        <div class="content">
+            <form action="/board/update" class="write-form" method="post" enctype="multipart/form-data">
+                <div class="user-info">
+                    <div class="user-info-sub">
+                        <p th:text="|등급 [${session.member?.g_name}]|"></p>
+                        <p th:text="|POINT [${session.member?.m_point}]|"></p>
+                    </div>
+                </div>
+
+                <h2 class="login-header">글수정</h2>
+                <!--로그인 id(hidden처리), 제목, 내용, 파일첨부-->
+                <input type="hidden" name="b_writer" th:value="${session.member?.m_id}">
+                <input type="text" name="b_title" th:value="${boardDto.b_title}" class="write-input" autofocus placeholder="짠짠 제목을 쓰자" required>
+                <textarea row="15" id="b_contents" th:text="${boardDto.b_contents}" name="b_contents" class="write-input ta" placeholder="이제 내용을 적자^_^">
+
+                </textarea>
+                <!--상세 첨부된 파일 목록 출력-->
+                <div>
+                    <div class="t_content p-15 file_h">FILES</div>
+                    <div class="d_content p-85 file_h" style="overflow: auto;">
+                        <th:block th:if="${#lists.isEmpty(boardDto.boardFileList)}">
+                            첨부 된 파일이 없슴둥ㅠ_ㅠ
+                        </th:block>
+                        <th:block th:unless="${#lists.isEmpty(boardDto.boardFileList)}">
+                            <th:block th:each="file:${boardDto.boardFileList}">
+                                <!--                        <img th:src="@{|/upload/${file.getBf_sysfilename()}|}" width="100">-->
+                                <a th:href="@{|/board/download?bf_sysfilename=${file.bf_sysfilename}&bf_orifilename=${file.bf_orifilename}|}">
+                                    <i class='far fa-file' style='font-size: 20px'></i>
+                                    <span th:text="${file.bf_orifilename}"></span>
+                                </a>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+                <div class = "filebox">
+                    <label for="attachments">업로드</label>
+                    <input type="file" name="attachments" id="attachments" multiple>
+                    <input type="text" class="upload-name" value="파일선택" readonly>
+                </div>
+                <div class = "btn-area">
+                    <input type = "submit" class = "btn-write" value = "W">
+                    <input type = "reset" class = "btn-write" value = "R">
+                    <input type = "button" class = "btn-write" value = "B" onclick="backBtn()">
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <th:block th:replace="~{fragments::footer}"></th:block>
+</div>
+</body>
+</html>

@@ -58,8 +58,9 @@ public class BoardRestController {
         log.info("====sysfilename:{}", boardFile.getBf_sysfilename());
         // 다운로드 메소드 호출 ---> 브라우저 다운로드 됨
         try {
-            ResponseEntity<Resource> resp = fm.fileDownload(boardFile, session);
-            return resp;
+            // ResponseEntity<Resource> resp = fm.fileDownload(boardFile, session);
+            // return resp;
+            return fm.fileDownload(boardFile, session);
         } catch (IOException e) {
             log.info("*****파일 다운로드 예외");
             throw new RuntimeException(e);

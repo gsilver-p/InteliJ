@@ -99,14 +99,15 @@ public class BoardController {
             return "redirect:/board";
         }
         BoardDto boardDto = boardService.getBoardDetail(b_num);
-        log.info("==== boardDto:{}", boardDto);
+        log.info("!!!!!!!!! boardDto:{}", boardDto);  // 제목, 내용, 글쓴이, 날짜, 파일리스트
+        log.info("!!!!!!!!! boardFileList:{}", boardDto.getBoardFileList()); // 파일리스트만 확인하자!
         if (boardDto != null) {
             // 댓글 리스트 가져오기! (동기 or 비동기)
-            // List<ReplyDto> rList = boardService.getReplyList(b_num);
-            // 첨부파일 리스트 가져오기
-            List<BoardFile> boardFileList = boardService.getBoardFileList(b_num);
-            model.addAttribute("boardFileList", boardFileList);
-            log.info("★★★★★ boardfileList:{},{}", boardFileList.size(), boardFileList);
+//             List<ReplyDto> rList = boardService.getReplyList(b_num);
+            // 첨부파일 리스트 가져오기 (원글+파일리스트 한번에 다 받고나서는 필요없어!)
+//             List<BoardFile> boardFileList = boardService.getBoardFileList(b_num);
+            // model.addAttribute("boardFileList", boardFileList);
+            // log.info("★★★★★ boardfileList:{},{}", boardFileList.size(), boardFileList);
             model.addAttribute("boardDto", boardDto);
             return "board/detail";
         } else {
@@ -176,4 +177,22 @@ public class BoardController {
             return "redirect:/board/write";
         }
     }
+
+    @GetMapping("/update")
+    public String update(Integer b_num, Model model) {
+        log.info("=== 글 수정창 열기");
+        BoardDto boardDto = boardService.getBoardDetail(b_num); // 원글 + 파일리스트
+        if(boardDto != null) {
+            log.info("===boardDto:{}", boardDto);
+            model.addAttribute("boardDto", boardDto); // 원글
+            return "board/update";
+        } else {
+            return "redirect:/board";
+        }
+    }
+
+//    @PostMapping("/update")
+//    public String update(BoardDto boardDto, Model model) {
+//
+//    }
 }

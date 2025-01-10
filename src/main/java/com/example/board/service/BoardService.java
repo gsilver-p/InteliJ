@@ -72,11 +72,12 @@ public class BoardService {
     }
 
     public BoardDto getBoardDetail(Integer b_num) {
-        return boardDao.getBoardDetail(b_num);
+        // return boardDao.getBoardDetail(b_num);
+        return boardDao.getBoardDetailWithFiles(b_num);
     }
 
     public boolean boardDelete(Integer b_num) {
-        return boardDao.baordDelete(b_num);
+        return boardDao.boardDelete(b_num);
     }
 
 
