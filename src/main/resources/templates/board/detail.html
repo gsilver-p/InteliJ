@@ -164,7 +164,7 @@
         // axios({
         //     method: 'post',
         //     url: '/board/reply',
-        //     data: data  // params: data는 get! data: data는 posst
+        //     data: data  // params: data는 get! data: data는 post
         // }).then(resp => console.log(resp))
         //     .catch(err => console.log(err))
 
@@ -206,13 +206,9 @@
             //         // error : function (err) {
             //         //     console.log('err:',err)
             //         // }
-        }).done(function (resp) {
-            console.log('resp:', resp)
-        })
+        }).done(resp => console.log('resp:', resp))
             // .done(resp=>console.log('resp:',resp))
-            .fail(function (err) {
-                console.log('err:', err)
-            })
+            .fail(err => console.log('err:', err))
         //.fail(err=>console.log('err:',err);
     } // reply Insert
 </script>

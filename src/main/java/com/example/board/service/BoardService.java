@@ -4,14 +4,12 @@ import com.example.board.common.FileManager;
 import com.example.board.common.Paging;
 import com.example.board.dao.BoardDao;
 import com.example.board.dao.MemberDao;
-import com.example.board.dto.BoardDto;
-import com.example.board.dto.BoardFile;
-import com.example.board.dto.MemberDto;
-import com.example.board.dto.SearchDto;
+import com.example.board.dto.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -76,42 +74,80 @@ public class BoardService {
         return boardDao.getBoardDetailWithFiles(b_num);
     }
 
-    public boolean boardDelete(Integer b_num) {
-        return boardDao.boardDelete(b_num);
-    }
-
-
-    public boolean boardWrite(BoardDto boardDto, HttpSession session) {
-        // 1. 글번호(100), 글제목, 글내용, 글쓴이, ... insert!
-        // 1-1. select 글번호! (1, 1-1 동시진행)
-        // 2. 첨부파일이 존재한다면 글번호(100), 원파일명, 난수파일명 insert!
-        boolean result = boardDao.boardWriteSelectKey(boardDto);  //insert하면서 select도 같이!
-        log.info("새 글 번호:{}", boardDto.getB_num());
-        if (result) {
-            // 글 쓸 때마다 point 10점 부여
-            MemberDto memberDto = (MemberDto)session.getAttribute("member");
-            int point = memberDto.getM_point() + 10;
-            if(point > 999) {point = 999;}
-            memberDto.setM_point(point);
-            memberDao.updateMemberPoint(memberDto);
-            MemberDto member = memberDao.getMemberInfo(memberDto.getM_id()); // 회원의 최신정보 가져오자!
-            session.setAttribute("memberDto", member);
-            // 첨부파일 여부 확인
-            if (!boardDto.getAttachments().get(0).isEmpty()) {
-                // 파일 업로드하고, DB insert
-                if(fm.fileUpload(boardDto.getAttachments(),session,boardDto.getB_num())) {
-                    log.info("★upload ok!");
-                    return true;
-                }
+    @Transactional  // 수동커밋으로 바꾸는 친구
+    public boolean boardDelete(Integer b_num, HttpSession session) {
+        // 1. 자식 데이터들 삭제(첨부파일, 댓글)
+        // 2. 부모 데이터 삭제
+        // 3. 전체 진행상황이 삭제면 commit, 하나라도 실패하면 rollback
+        List<ReplyDto> replyList = boardDao.getReplyList(b_num);
+        if (replyList != null && replyList.size() > 0) {
+            if (!boardDao.deleteReply(b_num)) {
+                log.info("!!!!! deleteReply 예외발생");
+                throw new RuntimeException(); // rollback
             }
-            return true; // 첨부파일 없이 글쓰기만 성공!
-        } else {
-            return false;  // 글쓰기 실패야
         }
+        String[] sysfiles = boardDao.getSysFileName(b_num);
+        if (sysfiles != null && sysfiles.length > 0) {
+            if (!boardDao.deleteBoardFile(b_num)) {
+                log.info("!!!! 첨부파일 삭제 예외");
+                throw new RuntimeException();
+            }
+        }
+        if (!boardDao.boardDelete(b_num)) {
+            log.info("!!!! 글 삭제 예외");
+            throw new RuntimeException();
+        }
+        // 4. upload 폴더 파일 삭제
+        if (sysfiles.length > 0) {
+            fm.fileDelte(sysfiles, session);
+        }
+        return true;
     }
 
-    public List<BoardFile> getBoardFileList(Integer bNum) {
-        return boardDao.getBoardFileList(bNum);
+public boolean boardWrite(BoardDto boardDto, HttpSession session) {
+    // 1. 글번호(100), 글제목, 글내용, 글쓴이, ... insert!
+    // 1-1. select 글번호! (1, 1-1 동시진행)
+    // 2. 첨부파일이 존재한다면 글번호(100), 원파일명, 난수파일명 insert!
+    boolean result = boardDao.boardWriteSelectKey(boardDto);  //insert하면서 select도 같이!
+    log.info("새 글 번호:{}", boardDto.getB_num());
+    if (result) {
+        // 글 쓸 때마다 point 10점 부여
+        MemberDto memberDto = (MemberDto) session.getAttribute("member");
+        int point = memberDto.getM_point() + 10;
+        if (point > 999) {
+            point = 999;
+        }
+        memberDto.setM_point(point);
+        memberDao.updateMemberPoint(memberDto);
+        MemberDto member = memberDao.getMemberInfo(memberDto.getM_id()); // 회원의 최신정보 가져오자!
+        session.setAttribute("memberDto", member);
+        // 첨부파일 여부 확인
+        if (!boardDto.getAttachments().get(0).isEmpty()) {
+            // 파일 업로드하고, DB insert
+            if (fm.fileUpload(boardDto.getAttachments(), session, boardDto.getB_num())) {
+                log.info("★upload ok!");
+                return true;
+            }
+        }
+        return true; // 첨부파일 없이 글쓰기만 성공!
+    } else {
+        return false;  // 글쓰기 실패야
     }
+}
 
+public List<BoardFile> getBoardFileList(Integer bNum) {
+    return boardDao.getBoardFileList(bNum);
+}
+
+public List<ReplyDto> insertReply(ReplyDto replyDto) {
+    List<ReplyDto> replyList = null;
+    if (boardDao.insertReply(replyDto)) {
+        replyList = boardDao.getReplyList(replyDto.getR_bnum());
+    }
+    return replyList;
+}
+
+public List<ReplyDto> getReplyList(Integer bNum) {
+    return boardDao.getReplyList(bNum);
+}
 }

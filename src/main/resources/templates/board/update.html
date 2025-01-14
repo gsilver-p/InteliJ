@@ -24,7 +24,8 @@
 
     <section>
         <div class="content">
-            <form action="/board/update" class="write-form" method="post" enctype="multipart/form-data">
+            <form action="/board/update" th:object="${boardDto}" class="write-form" method="post" enctype="multipart/form-data">
+                    <!--th:object를 쓰면 밑에 th:field에서 $대신 *을 쓰고 boardDto 삭제!-->
                 <div class="user-info">
                     <div class="user-info-sub">
                         <p th:text="|등급 [${session.member?.g_name}]|"></p>
@@ -34,9 +35,9 @@
 
                 <h2 class="login-header">글수정</h2>
                 <!--로그인 id(hidden처리), 제목, 내용, 파일첨부-->
-                <input type="hidden" name="b_writer" th:value="${session.member?.m_id}">
-                <input type="text" name="b_title" th:value="${boardDto.b_title}" class="write-input" autofocus placeholder="짠짠 제목을 쓰자" required>
-                <textarea row="15" id="b_contents" th:text="${boardDto.b_contents}" name="b_contents" class="write-input ta" placeholder="이제 내용을 적자^_^">
+                <input type="hidden" name="b_num" th:field="${boardDto.b_num}">
+                <input type="text" name="b_title" th:field="${boardDto.b_title}" class="write-input" autofocus placeholder="짠짠 제목을 쓰자" required>
+                <textarea row="15" id="b_contents" th:field="${boardDto.b_contents}" name="b_contents" class="write-input ta" placeholder="이제 내용을 적자^_^">
 
                 </textarea>
                 <!--상세 첨부된 파일 목록 출력-->
@@ -48,7 +49,7 @@
                         </th:block>
                         <th:block th:unless="${#lists.isEmpty(boardDto.boardFileList)}">
                             <th:block th:each="file:${boardDto.boardFileList}">
-                                <!--                        <img th:src="@{|/upload/${file.getBf_sysfilename()}|}" width="100">-->
+                                <!--<img th:src="@{|/upload/${file.getBf_sysfilename()}|}" width="100">-->
                                 <a th:href="@{|/board/download?bf_sysfilename=${file.bf_sysfilename}&bf_orifilename=${file.bf_orifilename}|}">
                                     <i class='far fa-file' style='font-size: 20px'></i>
                                     <span th:text="${file.bf_orifilename}"></span>
@@ -73,5 +74,9 @@
 
     <th:block th:replace="~{fragments::footer}"></th:block>
 </div>
+
+<script>
+
+</script>
 </body>
 </html>

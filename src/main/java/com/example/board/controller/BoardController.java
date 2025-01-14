@@ -1,6 +1,7 @@
 package com.example.board.controller;
 
 import com.example.board.dto.*;
+import com.example.board.exception.PageNumException;
 import com.example.board.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -46,15 +47,18 @@ public class BoardController {
     @GetMapping
     public String boardlist(SearchDto searchdto, Model model, HttpSession session) {
         log.info("before searchdto:{}", searchdto);
-        if (searchdto.getPageNum() == null)
+        if (searchdto.getPageNum() < 1) {
+            throw new PageNumException("잘못 된 페이지, 확인 바랍니다.");
+        }
+        if (searchdto.getPageNum() == null) {
             searchdto.setPageNum(1);
-
-        if (searchdto.getListCnt() == null)
+        }
+        if (searchdto.getListCnt() == null) {
             searchdto.setListCnt(BoardService.listcnt);
-
-        if (searchdto.getStartIndex() == null)
+        }
+        if (searchdto.getStartIndex() == null) {
             searchdto.setStartIndex(0);
-
+        }
         List<BoardDto> boardList = null;
         // 정적쿼리
         //  if(searchdto.getColname() == null || searchdto.getKeyword() == null) {
@@ -117,16 +121,18 @@ public class BoardController {
     }
 
     @GetMapping("/delete")
-    public String boardDelete(@RequestParam("b_num") Integer b_num, Model model, RedirectAttributes redirectAttributes) {
+    public String boardDelete(@RequestParam("b_num") Integer b_num, HttpSession session, RedirectAttributes redirectAttributes) {
         log.info("==== Delete b_num:{}", b_num);
         if (b_num == null || b_num < 1) {
             return "redirect:/board";
         }
-        if (boardService.boardDelete(b_num)) {
+        try{
+            boardService.boardDelete(b_num, session);
             redirectAttributes.addFlashAttribute("msg", b_num + "번 삭제 성공! 아쉽다..");  // 한 번 출력
             // redirectAttributes.addAttribute("msg",b_num+"번 삭제 성공! 아쉽다.."); // 리퀘스트 객체에 저장 여러 번 출력
             return "redirect:/board";
-        } else {
+        } catch (Exception e) {
+            log.info("!!!!!!delete Board 실패");
             redirectAttributes.addFlashAttribute("msg", b_num + "번 삭제 실패^_^");
             return "redirect:/board/detail?b_num=" + b_num;
         }
@@ -195,4 +201,5 @@ public class BoardController {
 //    public String update(BoardDto boardDto, Model model) {
 //
 //    }
+
 }

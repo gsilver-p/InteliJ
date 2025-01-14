@@ -2,6 +2,7 @@ package com.example.board.dao;
 
 import com.example.board.dto.BoardDto;
 import com.example.board.dto.BoardFile;
+import com.example.board.dto.ReplyDto;
 import com.example.board.dto.SearchDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -38,4 +39,14 @@ public interface BoardDao {
     List<BoardFile> getBoardFileList(Integer bNum);
 
     BoardDto getBoardDetailWithFiles(Integer bNum);
+
+    boolean insertReply(ReplyDto replyDto);
+
+    List<ReplyDto> getReplyList(Integer bNnum);
+
+    boolean deleteReply(Integer bNum);
+
+    String[] getSysFileName(Integer bNum);
+
+    boolean deleteBoardFile(Integer bNum);
 }

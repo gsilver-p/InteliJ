@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 // @Repository // 인터페이스라서 만들면 안돼
 @Mapper
 public interface MemberDao {
@@ -21,4 +23,6 @@ public interface MemberDao {
     String getSecurityPw(String mId);
 
     void updateMemberPoint(MemberDto memberDto);
+
+    List<MemberDto> getAllMember();
 }

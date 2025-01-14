@@ -14,6 +14,8 @@ import lombok.experimental.Accessors;
 public class ReplyDto {
     // 스프링 Validation
     private int r_bnum;
-    private String r_contents;
+    private String r_content;
     private String r_writer;
+
+
 }

@@ -46,4 +46,8 @@
         where m.m_id = #{mId}
     </select>
 
+    <select id="getAllMember">
+        select * from member
+    </select>
+
 </mapper>

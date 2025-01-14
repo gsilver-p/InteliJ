@@ -85,6 +85,7 @@
                                  on b.b_num = bf.bf_bnum
         where b.b_num = #{bNum}
     </select>
+
     <!--boardResult 매핑-->
     <resultMap id="boardResult" type="boardDto">
         <!--property:필드명/ column:컬럼명-->
@@ -105,4 +106,27 @@
         <result property="bf_orifilename" column="bf_orifilename"/>
         <result property="bf_sysfilename" column="bf_sysfilename"/>
     </resultMap>
+
+    <insert id="insertReply">
+        insert into reply(r_bnum, r_contents, r_writer, r_date)
+        values(#{r_bnum}, #{r_contents}, #{r_writer}, default)
+    </insert>
+
+    <select id="getReplyList" resultType="com.example.board.dto.ReplyDto">
+        select r_writer, r_content, r_date from reply
+        where r_bnum=#{bNum} order by r_date desc
+    </select>
+
+    <delete id="deleteReply">
+        delete from reply where r_bnum = #{bNum}
+    </delete>
+
+    <select id="getSysFileName">
+        select bf_sysfilename from boardfile where bf_bnum = #{bNum}
+    </select>
+
+    <delete id="deleteBoardFile">
+        delete from boardfile where bf_bnum = #{bNum}
+    </delete>
+
 </mapper>

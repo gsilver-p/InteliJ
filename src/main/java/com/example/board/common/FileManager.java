@@ -154,4 +154,7 @@ public class FileManager {
             }
         }//for end
     }
+
+    public void fileDelte(String[] sysfiles, HttpSession session) {
+    }
 }

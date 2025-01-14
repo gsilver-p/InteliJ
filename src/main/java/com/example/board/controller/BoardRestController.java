@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController // @ResponseBody가 기본 값
 @Slf4j
@@ -46,10 +47,15 @@ public class BoardRestController {
     // 제이슨으로 받을 때!
     @PostMapping("/reply")
     // @ResponseBody   // jackson(메시지컨버터) : json --> java 객체변환 @RequestBody <-> @ResponseBody
-    public ReplyDto insertReply(@RequestBody ReplyDto replyDto, HttpSession session, HttpServletRequest request) {
-        System.out.println("replyDto : " + replyDto);
-        log.info("replyDto:{}", replyDto);
-        return replyDto;
+    public List<ReplyDto> insertReply(ReplyDto replyDto){ //, HttpSession session) {
+        log.info("=====insert r_bnum:{}", replyDto.getR_bnum());
+        log.info("=====insert r_contents:{}", replyDto.getR_content());
+        //String id = ((MemberDto)session.getAttribute("member")).getM_id();
+
+        List<ReplyDto> rList = boardService.insertReply(replyDto);
+
+        log.info("=====rList: {}", rList);
+        return rList;
     }
 
     @GetMapping("/download")
@@ -66,4 +72,6 @@ public class BoardRestController {
             throw new RuntimeException(e);
         }
     }
+
+
 }
