@@ -5,6 +5,7 @@ import com.example.board.common.Paging;
 import com.example.board.dao.BoardDao;
 import com.example.board.dao.MemberDao;
 import com.example.board.dto.*;
+import com.example.board.exception.DBException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,19 +84,19 @@ public class BoardService {
         if (replyList != null && replyList.size() > 0) {
             if (!boardDao.deleteReply(b_num)) {
                 log.info("!!!!! deleteReply 예외발생");
-                throw new RuntimeException(); // rollback
+                throw new DBException(); // rollback
             }
         }
         String[] sysfiles = boardDao.getSysFileName(b_num);
         if (sysfiles != null && sysfiles.length > 0) {
             if (!boardDao.deleteBoardFile(b_num)) {
                 log.info("!!!! 첨부파일 삭제 예외");
-                throw new RuntimeException();
+                throw new DBException();
             }
         }
         if (!boardDao.boardDelete(b_num)) {
             log.info("!!!! 글 삭제 예외");
-            throw new RuntimeException();
+            throw new DBException();
         }
         // 4. upload 폴더 파일 삭제
         if (sysfiles.length > 0) {

@@ -50,4 +50,10 @@
         select * from member
     </select>
 
+    <select id="testParam2" resultType="java.util.Map">
+        -- 낮은 버전(legacy)에서 사용법
+--         select * from member where m_id=#{param1} and m_point=#{param2}
+        select * from member where m_id=#{id} and m_point=#{point}
+    </select>
+
 </mapper>

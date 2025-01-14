@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 // @Repository // 인터페이스라서 만들면 안돼
 @Mapper
@@ -25,4 +26,6 @@ public interface MemberDao {
     void updateMemberPoint(MemberDto memberDto);
 
     List<MemberDto> getAllMember();
+
+    Map<String, Object> testParam2(String id, int point);
 }

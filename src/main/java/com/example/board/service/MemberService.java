@@ -2,11 +2,14 @@ package com.example.board.service;
 
 import com.example.board.dao.MemberDao;
 import com.example.board.dto.MemberDto;
+import com.example.board.exception.IdCheckException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -46,6 +49,14 @@ public class MemberService {
     }
 
     public boolean isUsedId(String mId) {
-        return memberdao.isUsedId(mId);
+        if(memberdao.isUsedId(mId)) {
+            throw new IdCheckException("이미!!!! 사용 중인 아이디야");
+        } else {
+            return false;
+        }
+    }
+
+    public Map<String, Object> testParam2(String id, int point) {
+        return memberdao.testParam2(id,point);
     }
 }

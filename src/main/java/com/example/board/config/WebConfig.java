@@ -18,6 +18,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/member/login", "/member/logout", "/member/join","/member/idcheck") // 인터셉트에서 제외 할 url
                 .excludePathPatterns("/js/**", "/css/**", "/img/**", "/favicon.ico","/error")
-                .excludePathPatterns("/board/**");
+                .excludePathPatterns("/board/**","/test/**");
     }
 }

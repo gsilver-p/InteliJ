@@ -47,11 +47,8 @@ public class BoardController {
     @GetMapping
     public String boardlist(SearchDto searchdto, Model model, HttpSession session) {
         log.info("before searchdto:{}", searchdto);
-        if (searchdto.getPageNum() < 1) {
+        if (searchdto.getPageNum() == null || searchdto.getPageNum() < 1) {
             throw new PageNumException("잘못 된 페이지, 확인 바랍니다.");
-        }
-        if (searchdto.getPageNum() == null) {
-            searchdto.setPageNum(1);
         }
         if (searchdto.getListCnt() == null) {
             searchdto.setListCnt(BoardService.listcnt);
@@ -126,17 +123,18 @@ public class BoardController {
         if (b_num == null || b_num < 1) {
             return "redirect:/board";
         }
-        try{
-            boardService.boardDelete(b_num, session);
-            redirectAttributes.addFlashAttribute("msg", b_num + "번 삭제 성공! 아쉽다..");  // 한 번 출력
-            // redirectAttributes.addAttribute("msg",b_num+"번 삭제 성공! 아쉽다.."); // 리퀘스트 객체에 저장 여러 번 출력
-            return "redirect:/board";
-        } catch (Exception e) {
-            log.info("!!!!!!delete Board 실패");
-            redirectAttributes.addFlashAttribute("msg", b_num + "번 삭제 실패^_^");
-            return "redirect:/board/detail?b_num=" + b_num;
-        }
+        // try{
+        boardService.boardDelete(b_num, session);
+        redirectAttributes.addFlashAttribute("msg", b_num + "번 삭제 성공! 아쉽다..");  // 한 번 출력
+        // redirectAttributes.addAttribute("msg",b_num+"번 삭제 성공! 아쉽다.."); // 리퀘스트 객체에 저장 여러 번 출력
+        return "redirect:/board";
+        // } catch (Exception e) {
+        //    log.info("!!!!!!delete Board 실패");
+        //    redirectAttributes.addFlashAttribute("msg", b_num + "번 삭제 실패^_^");
+        //    return "redirect:/board/detail?b_num=" + b_num;
+        //}
     }
+
 
     @GetMapping("/write")
     public String write() {
@@ -175,11 +173,11 @@ public class BoardController {
             log.info("file.getSize():{}", file.isEmpty());
         }
         boolean result = boardService.boardWrite(boardDto, session);
-        if(result) {
-            redirectAttributes.addFlashAttribute("msg","글쓰기 성공!");
+        if (result) {
+            redirectAttributes.addFlashAttribute("msg", "글쓰기 성공!");
             return "redirect:/board";
         } else {
-            redirectAttributes.addFlashAttribute("msg","글쓰기 실패ㅠㅠ");
+            redirectAttributes.addFlashAttribute("msg", "글쓰기 실패ㅠㅠ");
             return "redirect:/board/write";
         }
     }
@@ -188,7 +186,7 @@ public class BoardController {
     public String update(Integer b_num, Model model) {
         log.info("=== 글 수정창 열기");
         BoardDto boardDto = boardService.getBoardDetail(b_num); // 원글 + 파일리스트
-        if(boardDto != null) {
+        if (boardDto != null) {
             log.info("===boardDto:{}", boardDto);
             model.addAttribute("boardDto", boardDto); // 원글
             return "board/update";
@@ -196,10 +194,8 @@ public class BoardController {
             return "redirect:/board";
         }
     }
-
 //    @PostMapping("/update")
 //    public String update(BoardDto boardDto, Model model) {
 //
-//    }
-
+//    
 }
